@@ -22,6 +22,8 @@ require_once __DIR__ . "/vendor/autoload.php";
             "filters" => [
                 "search_result_item" => "#tiles > .new-tile .tile-title > h5 > a", // cesta k odkazu na detail produktu
                 "product_price" => ".pd-price-delivery .total-price .price-vatin", // cesta k cene produktu na jeho karte
+                "product_name" => ".pd-wrap > h1", // cesta k nazvu produktu na jeho karte
+                "product_rating" => ".rating__label", // cesta k hodnoceni produktu na jeho karte
                 "product_code" => ".pd-next-in-category__item-value", // cesta ke kodu prodejce
             ]
         ]);

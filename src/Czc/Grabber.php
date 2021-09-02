@@ -45,10 +45,22 @@ class Grabber implements GrabberInterface
 
             $product = new Product();
 
+            // grab nazvu produktu
+            $name = $this->searchProductName($productCrawler);
+            if ($name !== null) {
+                $product->setName($name);
+            }
+
             // grab ceny produktu
             $price = $this->searchProductPrice($productCrawler);
             if ($price !== null) {
                 $product->setPrice($price);
+            }
+
+            // grab hodnoceni produktu
+            $rating = $this->searchProductRating($productCrawler);
+            if ($rating !== null) {
+                $product->setRating($rating);
             }
 
             return $product;
@@ -94,10 +106,37 @@ class Grabber implements GrabberInterface
             return null;
         }
 
-        $priceText = $productPriceNodes->first()->text();
-        $price = preg_replace('/([^0-9\.,])/i', '', $priceText);
-        $price = str_replace(",", ".", $price);
-        return (float)$price;
+        return $this->parseFloatFromString($productPriceNodes->first()->text());
+    }
+
+    /**
+     * Parsovani nazvu produktu
+     * @param Crawler $productCrawler
+     * @return string|null
+     */
+    private function searchProductName(Crawler $productCrawler): ?string
+    {
+        $productNameNodes = $productCrawler->filter($this->getFilterProductName());
+        if ($productNameNodes->count() === 0) {
+            return null;
+        }
+
+        return $productNameNodes->first()->text();
+    }
+
+    /**
+     * Parsovani hodnoceni produktu
+     * @param Crawler $productCrawler
+     * @return float|null
+     */
+    private function searchProductRating(Crawler $productCrawler): ?float
+    {
+        $productRatingNodes = $productCrawler->filter($this->getFilterProductRating());
+        if ($productRatingNodes->count() === 0) {
+            return null;
+        }
+
+        return $this->parseFloatFromString($productRatingNodes->first()->text());
     }
 
     /**
@@ -111,6 +150,18 @@ class Grabber implements GrabberInterface
         $productCodeValues = $productCrawler->filter($this->getFilterProductCode())->extract(["_text"]);
         return in_array($productId, $productCodeValues, true);
     }
+
+    /**
+     * @param string $numericValue
+     * @return float
+     */
+    private function parseFloatFromString(string $numericValue): float
+    {
+        $float = preg_replace('/([^0-9\.,])/i', '', $numericValue);
+        return (float)str_replace(",", ".", $float);
+    }
+
+    // Konfigurace
 
     private function getBaseUrl(): string
     {
@@ -130,6 +181,16 @@ class Grabber implements GrabberInterface
     private function getFilterProductPrice(): string
     {
         return $this->config["filters"]["product_price"];
+    }
+
+    private function getFilterProductName(): string
+    {
+        return $this->config["filters"]["product_name"];
+    }
+
+    private function getFilterProductRating(): string
+    {
+        return $this->config["filters"]["product_rating"];
     }
 
     private function getFilterProductCode(): string
