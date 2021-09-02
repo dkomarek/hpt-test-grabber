@@ -14,3 +14,15 @@
 1. Rozšiř aplikaci z bodu 1, aby získávala i název produktu a jeho procentuální hodnocení. Odpovídajícím způsobem rozšiř výstupní data.
 
     ![zadání 2](img2.jpg)
+
+### POUŽITÍ
+
+1. Stáhnout composer dependencies
+```shell
+php composer.phar install
+```
+
+1. Grabování dat produktů
+```shell
+php run.test vstup.txt
+```

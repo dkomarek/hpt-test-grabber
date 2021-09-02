@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace HPT;
 
+use Exception;
+use SplFileObject;
+
 class Dispatcher
 {
-    /** @var Grabber */
+    /** @var GrabberInterface */
     private $grabber;
 
-    /** @var Output */
+    /** @var OutputInterface */
     private $output;
 
-    public function __construct(Grabber $grabber, Output $output)
+    public function __construct(GrabberInterface $grabber, OutputInterface $output)
     {
         $this->grabber = $grabber;
         $this->output = $output;
@@ -20,11 +23,44 @@ class Dispatcher
 
     /**
      * @return string JSON
+     * @throws Exception
      */
-    public function run(): string
+    public function run(string $productsFile): string
     {
-        // code here
+        $productCodes = $this->parseProductCodesFromFile($productsFile);
+        $products = [];
 
-        return $this->output->getJson();
+        foreach($productCodes as $productCode) {
+            $products[$productCode] = $this->grabber->grabProduct($productCode);
+        }
+
+        return $this->output->getJson($products);
+    }
+
+    /**
+     * Dekodovani produktovych kodu ze vstupniho souboru
+     * @param string $productsFile
+     * @return array
+     * @throws Exception
+     */
+    private function parseProductCodesFromFile(string $productsFile): array
+    {
+        $codes = [];
+
+        if (!file_exists($productsFile)) {
+            throw new Exception(sprintf("Soubor %s neexistuje", $productsFile));
+        }
+
+        $file = new SplFileObject($productsFile);
+
+        while(!$file->eof()) {
+            $code = trim($file->fgets());
+            if (!empty($code)) {
+                $codes[] = $code;
+            }
+        }
+
+        $file = null;
+        return $codes;
     }
 }

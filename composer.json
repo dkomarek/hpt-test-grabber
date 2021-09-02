@@ -1,0 +1,30 @@
+{
+    "name": "dkomarek/hpt-test-grabber",
+    "description": "CZC Grabber",
+    "minimum-stability": "stable",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "David",
+            "email": "dkomarek.cz@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "HPT\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "7.3"
+        }
+    },
+    "require": {
+        "symfony/console": "^5.3",
+        "symfony/css-selector": "^5.3",
+        "symfony/dom-crawler": "^5.3",
+        "symfony/property-access": "^5.3",
+        "symfony/serializer": "^5.3"
+    }
+}
